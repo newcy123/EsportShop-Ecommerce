@@ -1125,7 +1125,7 @@ def search_member(request):
     })
 
 
-# 404,500
+# 404 and 500
 def handler404(request, exception):
     return render(request, 'store/404error.html')  # 7
 
