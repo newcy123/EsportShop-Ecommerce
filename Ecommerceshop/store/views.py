@@ -500,10 +500,9 @@ def confirm_order_credit(request):  # ยืนยันการสั่งซ
 
 
 # ลงทะเบียน
-
 def signup(request):  # แสดงหน้าลงทะเบียน
     form = SignUpForm()
-    return render(request, 'store/signup.html', {'form': form})
+    return render(request, 'store/account/signup.html', {'form': form})
 
 
 def signup_post(request):  # หน้าบันทึกข้อมูล
@@ -529,12 +528,12 @@ def signup_post(request):  # หน้าบันทึกข้อมูล
     else:
         form = SignUpForm()
 
-    return render(request, 'store/signup.html', {'form': form})
+    return render(request, 'store/account/signup.html', {'form': form})
 
 
 def login(request):  # แสดงหน้า login
     form = AuthenticationForm()
-    return render(request, 'store/login.html', {'form': form})
+    return render(request, 'store/account/login.html', {'form': form})
 
 
 def logincheck(request):
@@ -561,7 +560,7 @@ def logincheck(request):
 
     else:
         form = AuthenticationForm()
-    return render(request, 'store/login.html', {'form': form})
+    return render(request, 'store/account/login.html', {'form': form})
 
 
 def logoff(request):  # logoff
@@ -622,7 +621,7 @@ def orderList(request):  # สำหรับ admin
             except (EmptyPage, InvalidPage):  # กรณีหน้าเปล่าๆ,มีข้อมูลไม่ถูกต้อง
                 order_Page = paginator.page(
                     paginator.num_pages)  # lock หน้าสูงสุด 3
-    return render(request, 'store/orderlist.html', dict(orders=order_Page))
+    return render(request, 'store/admin/orderlist.html', dict(orders=order_Page))
 
 
 @login_required(login_url='/login')
@@ -668,7 +667,6 @@ def order_approve(request, order_id):  # แจ้งชำระ/อัพโ�
     cost = 0
     total_all = 0
     banks = Bank.objects.all()
-    print(banks.values())
 
     if request.user.is_authenticated:
 
@@ -885,7 +883,7 @@ def dashboard(request):
         'total': total,
     }
 
-    return render(request, 'store/dashboard2.html', {
+    return render(request, 'store/admin/dashboard2.html', {
         'payload': payload,
     }
     )
@@ -895,7 +893,7 @@ def dashboard(request):
 @permission_required('is_staff')
 def category(request):
 
-    return render(request, 'store/addcategory.html')
+    return render(request, 'store/admin/addcategory.html')
 
 
 @permission_required('is_staff')
@@ -911,7 +909,7 @@ def add_category(request):
         )
         category.save()
         messages.success(request, "เพิ่มข้อมูลสำเร็จ")
-    return render(request, 'store/addcategory.html')
+    return render(request, 'store/admin/addcategory.html')
 
 
 @login_required(login_url='/login')
@@ -934,7 +932,7 @@ def product_manager(request):
         product_Page = paginator.page(
             paginator.num_pages)  # lock หน้าสูงสุด 3
 
-    return render(request, 'store/productmanager.html',
+    return render(request, 'store/admin/productmanager.html',
                   dict(products=product_Page))
 
 
@@ -947,7 +945,7 @@ def search_product(request):
 
         messages.error(request, "ไม่พบชื่อสินค้าที่ค้นหา")
 
-    return render(request, 'store/productmanager.html', {'products': serach_product})
+    return render(request, 'store/admin/productmanager.html', {'products': serach_product})
 
 
 @login_required(login_url='/login')
@@ -955,7 +953,7 @@ def search_product(request):
 def product(request):
     category = Category.objects.all()
 
-    return render(request, 'store/addproduct.html',
+    return render(request, 'store/admin/addproduct.html',
 
                   dict(categorys=category)
 
@@ -989,7 +987,7 @@ def add_product(request):
     )
     product.save()
     messages.success(request, "เพิ่มข้อมูลสำเร็จ")
-    return render(request, 'store/addproduct.html'
+    return render(request, 'store/admin/addproduct.html'
 
                   )
 
@@ -1034,9 +1032,18 @@ def update_product(request):
     else:
         products = request.GET['product']
         product = Product.objects.filter(name=products)
-        return render(request, 'store/editproduct.html', {
+        return render(request, 'store/admin/editproduct.html', {
             'products': product,
             'categorys': categories})
+
+
+@permission_required('is_staff')
+def delete_product(request):
+    id = request.POST['id']
+    product = Product.objects.get(pk=id)
+    product.delete()
+    messages.success(request, "ลบข้อมูลสำเร็จ")
+    return redirect("/admins/productall/")
 
 
 @login_required(login_url='/login')
@@ -1058,7 +1065,7 @@ def member(request):
         user_page = paginator.page(
             paginator.num_pages)
 
-    return render(request, 'store/member.html', {
+    return render(request, 'store/admin/member.html', {
         'members': user_page
     })
 
@@ -1087,7 +1094,7 @@ def update_member(request):
     else:
         username = request.GET['username']
         name = User.objects.filter(username=username)
-        return render(request, 'store/editmember.html', {
+        return render(request, 'store/admin/editmember.html', {
             'members': name
         })
 
@@ -1095,10 +1102,11 @@ def update_member(request):
 @permission_required('is_staff')
 def delete_member(request):
     id = request.POST['id']
+    print(id)
     user = User.objects.get(pk=id)
     user.delete()
     messages.success(request, "ลบข้อมูลสำเร็จ")
-    return redirect("/registeruser")
+    return redirect("/admins/members/")
 
 
 @login_required(login_url='/login')
@@ -1112,7 +1120,7 @@ def search_member(request):
 
         messages.error(request, "ไม่พบชื่อของลูกค้า กรุณาตรวจสอบอีกครั้ง !! ")
 
-    return render(request, 'store/member.html', {
+    return render(request, 'store/admin/member.html', {
         'members': serach_member
     })
 
