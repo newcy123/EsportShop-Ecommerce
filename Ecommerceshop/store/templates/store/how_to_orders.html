@@ -1,0 +1,32 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+  h1 {
+    text-align: center;
+  }
+
+  body {
+    background-color: seashell
+  }
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+</style>
+<div class="container">
+  <br>
+  <img style="float:center" src="/media/alert/dev.jpg" alt="" srcset="" width="500">
+
+
+  <h3 style="text-align:center">กำลังอยู่ในช่วงกำลังพัฒนา</h3>
+  <br>
+
+  <div style="text-align:center">
+    <a href="/" class="btn btn-secondary">กลับไปหน้าหลัก</a>
+  </div>
+  {% endblock %}

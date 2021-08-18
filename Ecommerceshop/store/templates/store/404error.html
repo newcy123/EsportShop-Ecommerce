@@ -1,0 +1,34 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+          h1 {
+                    text-align: center;
+          }
+
+          body {
+                    background-color: seashell
+          }
+
+          img {
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 50%;
+          }
+</style>
+
+<div class="container">
+          <br>
+          <img style="float:left" src="/media/alert/404.jpg" alt="" srcset="" width="500">
+
+
+          <h3 class="font-weight-bold" style="text-align:center">404</h3>
+          <h3 class="font-weight-lighter" style="text-align:center">ขออภัยไม่พบหน้าเว็บที่คุณต้องการ !!!</h3>
+          <br>
+
+          <div style="text-align:center">
+                    <a href="/" class="btn btn-secondary">กลับไปหน้าหลัก</a>
+          </div>
+          {% endblock %}

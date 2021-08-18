@@ -1,0 +1,86 @@
+{% extends 'store/dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% block asd %}
+
+
+<div class="container my-3">
+
+  {% for member in members %}
+  <form action="{% url 'edit_member' %}" enctype="multipart/form-data" method="post">
+
+    {% csrf_token %}
+    <input type="hidden" value="{{member.id}}" name="id">
+
+    <div class="card">
+      <div class="card-body">
+        <h3 align="center">แก้ไขข้อมูลสมาชิก</h3>
+        <div class="form-group">
+          <label for="">ชื่อจริง</label>
+          <input type="text" name="firstname" value="{{member.first_name}}" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="">นามสกุล</label>
+          <input type="text" name="lastname" class="form-control" value="{{member.last_name}}">
+        </div>
+
+        <div class="form-group">
+          <label for="">อีเมลล์</label>
+          <input type="text" name="email" class="form-control" value="{{member.email}}">
+        </div>
+
+        <div class="form-group">
+          <label for="">ตำแหน่ง</label><br>
+          {% if member.is_active == 0 %}
+          <input type="checkbox" name="status" value="0" onclick="onlyOne(this)" checked>
+          <label for=" vehicle1"> ลูกค้า </label><br>
+          <input type="checkbox" name="status" value="1" onclick="onlyOne(this)">
+          <label for=" vehicle2"> พนักงาน</label><br>
+          {% else %}
+          <input type="checkbox" name="status" value="0" onclick="onlyOne(this)">
+          <label for=" vehicle1"> ลูกค้า </label><br>
+          <input type="checkbox" name="status" value="1" onclick="onlyOne(this)" checked>
+          <label for=" vehicle2"> พนักงาน</label><br>
+          {% endif %}
+        </div>
+
+
+        <input type="submit" value="อัพเดท" class="btn btn-success">
+      </div>
+    </div>
+
+
+
+  </form>
+
+  {% endfor %}
+
+  <br>
+  <nav aria-label="pagination">
+    {% if orders.paginator.num_pages > 1 %}
+    <ul class="pagination">
+      {% for page_number in orders.paginator.page_range %}
+
+      <li class="page-item 
+              {% if orders.number == page_number %}
+                active
+              {% endif %}
+              
+              "><a class="page-link" href="?page={{ page_number }}">{{page_number}}</a></li>
+
+      {% endfor %}
+
+    </ul>
+    {% endif %}
+  </nav>
+</div>
+<script>
+  function onlyOne(checkbox) {
+    var checkboxes = document.getElementsByName('status')
+    checkboxes.forEach((item) => {
+      if (item !== checkbox) item.checked = false
+    })
+  }
+</script>
+{% endblock %}

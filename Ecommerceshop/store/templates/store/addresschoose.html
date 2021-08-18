@@ -1,0 +1,638 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+  /* USER PROFILE PAGE */
+  
+
+  .container .main-section .payment-tabs .payment-tabs-item .nav-link {
+    background: #fff;
+    font-weight: bold;
+    border-bottom: unset;
+    background-color: #fff;
+    color: #0690f0;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .bank-detail {
+    font-size: 13px;
+  }
+
+  h3 {
+    font-weight: 500;
+  }
+
+  .number {
+    position: absolute;
+    font-weight: 800;
+    color: #fff;
+    background-color: #0033ff;
+    padding-left: 7px;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    width: 25px;
+    height: 25px;
+    top: -5px;
+    right: -5px
+  }
+
+  .param {
+    margin-bottom: 7px;
+    line-height: 1.4;
+  }
+
+  .param-inline dt {
+    display: inline-block;
+  }
+
+  .param dt {
+    margin: 0;
+    margin-right: 7px;
+    font-weight: 600;
+  }
+
+  .param-inline dd {
+    vertical-align: baseline;
+    display: inline-block;
+  }
+
+  .param dd {
+    margin: 0;
+    vertical-align: baseline;
+  }
+
+  .shopping-cart-wrap .price {
+    color: #007bff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 5px;
+    display: block;
+  }
+
+  var {
+    font-style: normal;
+  }
+
+  .media img {
+    margin-right: 1rem;
+  }
+
+  .img-sm {
+    width: 120px;
+    max-height: 150px;
+    object-fit: cover;
+  }
+
+  .cart-submit {
+    margin-top: 12px;
+    margin-bottom: 4px;
+    padding: 9px;
+    border: unset;
+    font-size: 15px;
+    padding-top: 14px;
+    padding-bottom: 10px;
+    width: auto;
+
+  }
+
+  .choice {
+    position: relative;
+    display: block;
+  }
+
+  .SelectedStation {
+    position: absolute;
+    top: 5px;
+    left: 0;
+  }
+
+  .choice p {
+    padding-left: 30px;
+  }
+
+  .btn-space {
+    display: block;
+    margin-inline-start: 7px;
+    top: 15px;
+  } 
+
+  .button_position {
+    position: absolute;
+    left: 100%;
+    top: 40%;
+  }
+  
+</style>
+<div class="container">
+  {% for msg in messages %}
+  {% if 'success' in msg.tags %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{msg}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  {% elif 'error' in msg.tags %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{msg}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  {% endif %}
+
+  {% endfor %}
+  {% if cart_items %}
+
+  <form action="{% url 'save_order' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!--Main layout-->
+    <main class="mt-3">
+      <div class="container wow fadeIn">
+
+        <div class="card">
+          <div class="card-body">
+            <div class="container address-wrapper">
+              <button type="button" class="btn btn-light float-right " data-toggle="modal" data-target="#Create"><i
+                  class="fa fa-plus"></i>
+                เพิ่มที่อยู่ใหม่</button>
+
+
+              <h4>ที่อยู่ในการจัดส่ง</h4>
+              <br>
+              <hr>
+
+              {% if contract %}
+
+              <label class="choice">
+                <div class="d-block my-3">
+                  <div id="row type-select">
+                    {% for data in contract %}
+                    <div class="row-form">
+
+                      <input type="radio" id="" name="contract" value="{{data.id}}" required>
+                      <label for="">
+                        <p><strong>{{data.name}} {{data.telephone}}</strong>
+                          {{data.address}}, {{data.amphures.name_th}} , {{data.provinces.name_th}} , {{data.postcode}}
+                        </p>
+                      </label>
+
+                      <button type="button" class="btn btn-secondary btn-space float-right" data-toggle="modal"
+                        data-target="#Update{{data.id}}"><i class="fa fa-wrench"></i>
+                        แก้ไข </button>
+                      
+                      <button type="button" class="btn btn-secondary btn-space float-right" data-toggle="modal"
+                        data-target="#DeleteModal{{data.id}}"><i class="fa fa-trash"></i>ลบข้อมูล</button>
+
+
+
+                    </div>
+
+                    <div class="modal fade" id="DeleteModal{{data.id}}" tabindex="-1" role="dialog"
+                      aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <form action="{% url 'delete_address' data.id %}" method="post">
+                          {% csrf_token %}
+
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">ยืนยันการลบข้อมูล</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              คุณต้องการลบที่อยู่ของชื่อ {{data.name}} หรือไม่ ?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-primary">ยืนยันการลบข้อมูล</button>
+                            </div>
+                          </div>
+                        </form>
+
+                      </div>
+                    </div>
+                    <br>
+                    
+                    <!-- Modal update-->
+                    <div class="modal fade" id="Update{{data.id}}" tabindex="-1" role="dialog"
+                      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <form action="{% url 'update_address' %}" method="post">
+                          {% csrf_token %}
+                          <input type="hidden" value="{{data.id}}" name="id">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLongTitle">ที่อยู่ใหม่</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+
+
+                              <div class="row">
+
+                                <div class="col-md-6">
+
+                                  <div class="md-form ">
+                                    <input type="text" id="firstName" name="name" value="{{data.name}}"
+                                      class="form-control" placeholder="กรอกชื่อ-นามสกุล">
+
+                                  </div>
+
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+
+                                  <div class="md-form mb-3">
+                                    <input type="text" id="email" class="form-control" value="{{data.email}}"
+                                      name="email" placeholder="E-mail">
+                                  </div>
+
+                                </div>
+
+
+                              </div>
+
+
+                              <div class="md-form input-group pl-0 mb-0">
+                                <input type="tel" class="form-control py-0" name="telephone" value="{{data.telephone}}"
+                                  placeholder="เบอร์โทร" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                              </div>
+                              <div class="col-md-6 pl-0 mb-3 text-left"><small>Format: 123-456-7890.</small></div>
+
+                              <div class="md-form mb-3">
+                                <input type="text" id="address" class="form-control" name="address_user"
+                                  value="{{data.address}}" placeholder="รายละเอียดที่อยู่">
+                              </div>
+
+                              <!--address-->
+                              <div class="md-form mb-3">
+
+                                <select name="province_id" id="province2" class="form-control">
+                                  <option value="{{data.provinces_id}}">{{data.provinces.name_th}}</option>
+
+                                  {% for province in provinces %}
+                                  <option value="{{province.pk}}">{{province.name_th}}</option>
+
+                                  {% endfor %}
+
+                                </select>
+                              </div>
+
+                              <div class="md-form mb-3">
+
+                                <select name="amphure_id" id="amphure2" class="form-control mx-10">
+                                  <option value="{{data.amphures_id}}">{{data.amphures.name_th}}</option>
+                                </select>
+                              </div>
+
+                              <div class="md-form mb-3">
+
+
+                                <select name="district_id" id="district2" class="form-control">
+                                  <option value="{{data.districts_id}}">{{data.districts.name_th}}</option>
+                                </select>
+                              </div>
+
+
+                              <div class="md-form mb-3">
+                                <input type="text" id="zip_code" class="form-control" value="{{data.postcode}}"
+                                  placeholder="รหัสไปรษณีย์" name="zip_code">
+                              </div>
+
+
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                              <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                            </div>
+
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    
+
+
+
+                  </div>
+
+                </div>
+
+              </label>
+
+
+
+              {% endif %}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      
+        <div class="card my-3">
+          <div class="card-body">
+            <label>
+              <strong>การชำระเงิน</strong>
+
+            </label>
+
+            <div class="md-form mb-3">
+
+
+
+              {% for type in payment_type %}
+              <div class="form-check my-2">
+                <input class="form-check-input" type="radio" name="payment_type" id="flexRadioDefault1" required
+                  value="{{type.id}}">
+                <label class="form-check-label" for="flexRadioDefault1">
+                  <div class="media-left">
+                    <img style="float:left" src="{{type.payment_image.url}}" width="250">
+                    &nbsp;{{type.payment_type}}
+                  </div>
+
+                </label>
+              </div>
+              <br>
+              {% endfor %}
+
+
+            </div>
+          </div>
+
+
+        </div>
+
+
+        <div class="col-md-12 text-center my-2">
+          <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary">ย้อนกลับ</a>
+          <button type="submit" class="btn btn-primary" name="no">บันทึก</button>
+
+        </div>
+
+
+
+      </div>
+
+    </main>
+  </form>
+
+  <div class="modal fade" id="Create" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <form action="{% url 'save_address' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">ที่อยู่ใหม่</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+
+            <div class="row">
+
+              <div class="col-md-6">
+
+                <div class="md-form ">
+                  <input type="text" id="firstName" name="name" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
+
+                </div>
+
+              </div>
+
+              <div class="col-md-6 mb-3">
+
+                <div class="md-form mb-3">
+                  <input type="text" id="email" class="form-control" name="email" placeholder="E-mail">
+                </div>
+
+              </div>
+              <!--Grid column-->
+
+            </div>
+            <!--Grid row-->
+
+            <!--Username-->
+
+
+            <div class="md-form input-group pl-0 mb-0">
+              <input type="tel" class="form-control py-0" name="telephone" placeholder="เบอร์โทร"
+                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+            </div>
+            <div class="col-md-6 pl-0 mb-3 text-left"><small>Format: 123-456-7890.</small></div>
+
+            <!--email-->
+            <div class="md-form mb-3">
+              <input type="text" id="address" class="form-control" name="address" placeholder="รายละเอียดที่อยู่">
+            </div>
+
+            <!--address-->
+            <div class="md-form mb-3">
+
+              <select name="province_id" id="province" class="form-control">
+                <option value="">เลือกจังหวัด</option>
+
+                {% for province in provinces %}
+                <option value="{{province.pk}}">{{province.name_th}}</option>
+
+                {% endfor %}
+
+              </select>
+            </div>
+
+            <div class="md-form mb-3">
+
+              <select name="amphure_id" id="amphure" class="form-control mx-10">
+                <option value="">เลือกอำเภอ</option>
+              </select>
+            </div>
+
+            <div class="md-form mb-3">
+
+
+              <select name="district_id" id="district" class="form-control">
+                <option value="">เลือกตำบล</option>
+              </select>
+            </div>
+
+
+            <div class="md-form mb-3">
+              <input type="text" id="zip_code" class="form-control" placeholder="รหัสไปรษณีย์" name="zip_code">
+            </div>
+
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary" name="save">ยืนยัน</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+  {% elif not cart_items %}
+  
+  
+
+          <img class="rounded mx-auto d-block" src="/media/other/empty-cart.png" >
+        <div class="text-center my-3">
+          <a href="/" class="btn btn-primary" style="text-align: center;">เลือกสินค้าต่อ</a>
+        </div>
+     
+  {% endif %}
+
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+  crossorigin="anonymous"></script>
+
+<script>
+
+
+
+
+
+  $("#province").change(function () {
+
+    var provinces_id = $(this).val();
+
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_amphures' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'provinces_id': provinces_id       // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกอำเภอ</option>';
+        data = respones.data
+        console.log(data)
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+        });
+        $("#amphure").html(html_data);
+      },
+
+    });
+
+  });
+
+
+  $("#amphure").change(function () {
+
+    var amphures_id = $(this).val();
+    console.log(amphures_id)
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_districts' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'amphures_id': amphures_id       // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกตำบล</option>';
+
+        data = respones.data
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+
+          // $("#zip_code").val(data.zip_code);
+        });
+
+        console.log(data)
+
+        $("#district").html(html_data);
+
+      },
+
+
+    });
+
+  });
+
+
+
+  $("#province2").change(function () {
+
+    var provinces__id = $(this).val();
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_amphures' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'provinces_id': provinces__id      // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกอำเภอ</option>';
+        data = respones.data
+        console.log(data)
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+        });
+        $("#amphure2").html(html_data);
+      },
+
+    });
+
+  });
+
+
+  $("#amphure2").change(function () {
+
+    var amphures_id = $(this).val();
+    console.log(amphures_id)
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_districts' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'amphures_id': amphures_id       // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกตำบล</option>';
+
+        data = respones.data
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+
+          // $("#zip_code").val(data.zip_code);
+        });
+
+        console.log(data)
+
+        $("#district2").html(html_data);
+
+      },
+
+
+    });
+
+  });
+
+
+
+
+
+
+
+
+</script>
+{% endblock %}

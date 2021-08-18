@@ -1,0 +1,120 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% block content%}
+{% load humanize %}
+
+<div class="container">
+  {% if order.paymenttype_id == 1 %}
+  <div class="jumbotron">
+    <h1 class="display-4">สั่งซื้อสินค้าสำเร็จ !!</h1>
+    <p class="lead">เลขที่ใบสั่งซื้อของคุณคือ {{order.order_id}}</p>
+    <hr class="my-4">
+    
+    <br>
+   
+    <p>หลังจากชำระเงินแล้ว สามารถติดตามสถานะของการส่งสินค้าได้ที่</p>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="{% url 'orderhistory' %}" role="button">ติดตามสินค้า</a>
+    </p>
+
+
+  </div>
+
+  {% elif order.paymenttype_id == 2 or order.paymenttype_id == 3 %}
+  <div class="jumbotron">
+    <h1 class="display-4">สั่งซื้อสินค้าสำเร็จ !!</h1>
+    <p class="lead">เลขที่ใบสั่งซื้อของคุณคือ {{order.order_id}}</p>
+    <hr class="my-4">
+    
+    <div class="tab-pane my-3" id="history" role="tabpanel" aria-labelledby="history-tab">
+      <label>
+        เลขที่บัญชีในการโอนเงินเพื่อชำระค่าสินค้า
+      </label>
+      <div class="media my-2">
+        <div class="media-left">
+          <img style="float:left" src="/media/bank/scb.png" width="100"></a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading" style="font-size: 13px">&nbsp; ธนาคารไทยพาณิชย์</h4>
+          <div class="bank-detail">
+            <div class="account-number">
+              <span>&nbsp; เลขที่บัญชี :</span>
+              <strong>xxx-xxxx-xxx-xx</strong>
+            </div>
+            <div class="account-name">
+              <span>&nbsp; ชื่อ:</span>
+              พัชรพล เตียเจริญ
+            </div>
+            <div class="account-branch">
+              <span>&nbsp; มหาวิทยาลัย เทคโนโลยีสุรนารี</span>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="media my-3">
+        <div class="media-left">
+          <img style="float:left" src="/media/bank/kbank.png" width="100"></a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading" style="font-size: 13px">&nbsp; ธนาคารกรสิกรไทย</h4>
+          <div class="bank-detail">
+            <div class="account-number">
+              <span>&nbsp; เลขที่บัญชี :</span>
+              <strong>xxx-xxxx-xxx-xx</strong>
+            </div>
+            <div class="account-name">
+              <span>&nbsp; ชื่อ:</span>
+              พัชรพล เตียเจริญ
+            </div>
+            <div class="account-branch">
+              <span>&nbsp; มหาวิทยาลัย เทคโนโลยีสุรนารี</span>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="media my-3">
+        <div class="media-left">
+          <img style="float:left" src="/media/bank/truemoney.png" width="100"></a>
+        </div>
+        <div class="media-body">
+         
+          <div class="bank-detail">
+            <div class="account-number">  
+              <h4 class="media-heading" style="font-size: 15px">&nbsp; ทรูมันนี่วอเล็ต</h4>
+              <span>&nbsp; หมายเลขโทรศัพท์:</span>
+              <strong>xxx-xxxx-xxx-xx</strong>
+            </div>
+            <div class="account-name">
+              <span>&nbsp; ชื่อ:</span>
+              พัชรพล เตียเจริญ
+            </div>
+        
+         
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+   
+   
+    <p>หลังจากชำระเงินแล้วให้ลูกค้าแจ้งยืนยันการชำระเงินได้ที่</p>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="{% url 'orderhistory' %}" role="button">แจ้งชำระสินค้า</a>
+    </p>
+
+
+  </div>
+{% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+  /* USER PROFILE PAGE */
+
+
+  .container .main-section .payment-tabs .payment-tabs-item .nav-link {
+    background: #fff;
+    font-weight: bold;
+    border-bottom: unset;
+    background-color: #fff;
+    color: #0690f0;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .bank-detail {
+    font-size: 13px;
+  }
+
+  h3 {
+    font-weight: 500;
+  }
+
+  .number {
+    position: absolute;
+    font-weight: 800;
+    color: #fff;
+    background-color: #0033ff;
+    padding-left: 7px;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    width: 25px;
+    height: 25px;
+    top: -5px;
+    right: -5px
+  }
+</style>
+<div class="container">
+  <div class="card my-3">
+    <div class="table-responsive">
+      <table class="table table-hover shopping-cart-wrap ">
+        <thead class="text-muted">
+          <tr>
+            <th scope="col" width="150">สินค้าที่สั่งแล้ว</th>
+            <th scope="col"></th>
+            <th scope="col" width="200">จำนวน</th>
+            <th scope="col" width="200">ราคา</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in cart_items %}
+          <tr>
+            <td>
+              <figure class="media">
+                <div class="img-wrap">
+                  <a href="{{data.product.get_url}}"><img src="{{data.product.image.url}}" class="img-thumbnail img-sm">
+                </div>
+
+              </figure>
+            </td>
+            <td>
+              <figure class="media">
+                <figcaption class="media-body">
+                  <h6 class="title">{{data.product.name}}</h6>
+                </figcaption>
+              </figure>
+            </td>
+            <td>
+              <var class="price">{{data.qty}}&nbsp;</var>
+
+            </td>
+            <td>
+              <div class="price-wrap">
+                <var class="price">{{data.product.price | intcomma}}&nbsp;บาท</var>
+              </div>
+            </td>
+
+          </tr>
+
+          {% endfor %}
+
+
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+          ราคารวม
+          <span>{{total|intcomma}} บาท</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+          ค่าธรรมเนี่ยม
+          <span>{{charge}} บาท</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+          ค่าจัดส่ง
+          <span>{{cost}} บาท</span>
+        </li>
+
+
+        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+          <div>
+            <strong>
+              ราคารวมสุทธิ </strong>
+            <strong>
+              <p class="mb-0">(ภาษีมูลค่าเพิ่ม :)</p>
+            </strong>
+          </div>
+          <h5><span><strong>{{total_all|intcomma}} บาท</strong></span></h5>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+  <div class="col-md-12 text-center my-2">
+
+
+
+
+    {% if payment_type == '1' %}
+
+    <form action="{% url 'confirm_order_credit' %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="contract" id="" value="{{contract}}">
+      <input type="hidden" name="payment_type" id="" value="{{payment_type}}">
+      <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-key="{{ data_key }}"
+        data-amount="{{ stripe_total }}" data-name="Phatcharaphon Shop" data-description="{{ description }}"
+        data-locale="Thailand" data-currency="thb">
+        </script>
+    </form>
+
+    {% else %}
+    <form action="{% url 'confirm_order' %}" method="POST" autocomplete="off">
+      {% csrf_token %}
+      <input type="hidden" name="contract" id="" value="{{contract}}">
+      <input type="hidden" name="payment_type" id="" value="{{payment_type}}">
+      <button type="submit" class="btn btn-primary" name="no">สั่งซื้อ</button>
+    </form>
+    {% endif %}
+
+  </div>
+</div>
+
+
+
+
+
+<!--Footer-->
+<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+
+
+  <!--Copyright-->
+  <div class="footer-copyright py-3">
+    © 2018 Copyright:
+    <a href="https://mdbootstrap.com/education/bootstrap/" target="_blank"> MDBootstrap.com </a>
+  </div>
+  <!--/.Copyright-->
+
+</footer>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+  crossorigin="anonymous"></script>
+
+<script>
+  const amphures = document.getElementById('amphure')
+  console.log(amphures)
+  $("#province").change(function () {
+
+    var provinces_id = $(this).val();
+    console.log(provinces_id)
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_amphures' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'provinces_id': provinces_id       // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกอำเภอ</option>';
+        data = respones.data
+        console.log(data)
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+        });
+        $("#amphure").html(html_data);
+      },
+
+    });
+
+  });
+
+  $("#amphure").change(function () {
+
+    var amphures_id = $(this).val();
+    console.log(amphures_id)
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'ajax_load_districts' %}",                  // set the url of the request
+      dataType: 'json',
+      data: {
+        'amphures_id': amphures_id       // add the course pk to the GET parameters
+      },
+      success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+        let html_data = '<option value="">เลือกตำบล</option>';
+
+        data = respones.data
+        data.forEach(function (data) {
+          html_data += `<option value="${data.id}">${data.name_th}</option>`
+
+          // $("#zip_code").val(data.zip_code);
+        });
+
+        console.log(data)
+
+        $("#district").html(html_data);
+
+
+
+      },
+
+
+    });
+
+  });
+
+
+</script>
+{% endblock %}

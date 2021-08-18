@@ -1,0 +1,192 @@
+{% extends 'store/dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% block asd %}
+
+<div class="container my-3">
+
+    {% if orders %}
+
+    <div class="card">
+        <div class="card-body">
+            <h3 align="center">รายการการสั่งซื้อทั้งหมด</h3>
+            <form class="form-inline ml-10 " action="{% url 'search_order_id' %}" , method="GET">
+                <div class="input-group my-2">
+                    <input type="text" name="order_id" class="form-control" placeholder="ค้นหารหัสใบสั่งซื้อ"
+                        autocomplete="off">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive my-3">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <td scope="col" width="270">เวลาสั่งซื้อ</td>
+                            <td scope="col" width="150">ผู้สั่งซื้อ</td>
+                            <td scope="col" width="150">เลขที่ใบสั่งซื้อ</td>
+                            <td scope="col" width="300">ยอดรวม</td>
+                            <td scope="col" width="650">วิธีการชำระ</td>
+                            <td scope="col" width="300">สถานะ</td>
+                            <td scope="col" width="300">Tracking No.</td>
+                            <!-- <td scope="col" width="300">วิธีการชำระ</td> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in orders %}
+                        <tr>
+                            <td>
+                                <div class="order-create">
+                                    <var class="price">{{data.updated}}</var>
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="order-id">
+                                    <!-- {{data.user}}/ -->
+                                    <var class="price">{{data.user.first_name}}</var>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="order-id">
+                                    <a href="{% url 'updatetracking' data.order_id %}">{{item.order_id}}
+                                        <var class="price">{{data.order_id}}</var>
+                                    </a>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="order-id">
+                                    <p>{{data.total_all|intcomma}} บาท</p>
+
+                                </div>
+                            </td>
+                            <td class="order-status">
+                                {% if data.paymenttype_id == 1 %}
+                                <p>-</p>
+
+
+                                {% elif data.paymenttype_id == 2 or data.paymenttype_id == 3 %}
+                                {% if data.transfer_image %}
+                                <a href="{{ data.transfer_image.url }}" target="_blank">ดูสลิป</a>
+                                / โอนผ่าน {{ data.bank.bank_name }}
+                                {% elif not data.transfer_image %}
+                                <span class="fas fa-window-close" style='font-size:24px;color:red'></span>
+                                {% endif %}
+
+                                {% endif %}
+                            </td>
+
+                            {% if data.orderstatus_id == 1 %}
+
+
+                            <td class="order-status">
+                                <span class="fas fa-window-close" style='font-size:24px;color:red'></span>
+                            </td>
+
+
+                            {% elif data.orderstatus_id == 2 %}
+                            {% if data.transfer_image or data.paymenttype_id == 1 %}
+                            <td class="order-status">
+                                <a href="{% url 'status_change' data.order_id %}"><i class="fa fa-plus-square"
+                                        aria-hidden="true"></i>
+                                    ยืนยันการสั่ง</a>
+                            </td>
+                            {% else %}
+                            <td class="order-status">
+                                <span class="fas fa-window-close" style='font-size:24px;color:red'></span>
+                            </td>
+                            {% endif %}
+                            {% else %}
+                            <td class="order-status">
+
+                                <span class="fas fa-check-square" style='font-size:24px;color:green'></span>
+
+                            </td>
+                            {% endif %}
+                            <td class="cart_status">
+                                {% if data.transfer == None %}
+                                <span class="cart_status">-</span>
+                                {% else %}
+                                <p class="cart_status">{{data.transfer}}</p>
+                                {% endif %}
+                            </td>
+
+                            <!-- <td class="cart_status">
+
+                                <p class="cart_status">{{data.paymenttype.payment_type}}</p>
+
+                            </td> -->
+
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    {% else %}
+    <div class="card">
+        <div class="card-body">
+            <h3 align="center">รายการการสั่งซื้อทั้งหมด</h3>
+            <form class="form-inline ml-10 " action="{% url 'search_order_id' %}" , method="GET">
+                <div class="input-group my-2">
+                    <input type="text" name="order_id" class="form-control" placeholder="ค้นหารหัสใบสั่งซื้อ"
+                        autocomplete="off">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            {% for msg in messages %}
+            {% if 'success' in msg.tags %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{msg}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% elif 'error' in msg.tags %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{msg}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endif %}
+
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endif %}
+
+    <br>
+    <nav aria-label="pagination">
+        {% if orders.paginator.num_pages > 1 %}
+        <ul class="pagination">
+            {% for page_number in orders.paginator.page_range %}
+
+            <li class="page-item 
+              {% if orders.number == page_number %}
+                active
+              {% endif %}
+              
+              "><a class="page-link" href="?page={{ page_number }}">{{page_number}}</a></li>
+
+            {% endfor %}
+
+        </ul>
+        {% endif %}
+    </nav>
+</div>
+{% endblock %}

@@ -1,0 +1,313 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    .container .main-section .payment-tabs .payment-tabs-item .nav-link {
+        background: #fff;
+        font-weight: bold;
+        border-bottom: unset;
+        background-color: #fff;
+        color: #0690f0;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .bank-detail {
+        font-size: 13px;
+    }
+
+    h3 {
+        font-weight: 500;
+    }
+</style>
+
+<div class="container">
+
+    <form action="{% url 'order_approve' order.order_id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card my-5">
+            <div class="card-body">
+                <div class="form-group">
+                    <h4><u>รายละเอียดการสั่งซื้อ</u></h4><br>
+                    <p> <strong>ใบสั่งซื้อเลขที่</strong> #{{order.order_id}}</p>
+                    <p> <strong>ประเภทการชำระเงิน</strong> {{order.paymenttype.payment_type}}</p>
+                    {% if order.paymenttype.id == 1 %}
+                    <p> <strong>email ที่ชำระ</strong> {{order.credit_email}} บาท</p>
+                    {% endif %}
+                    <p> <strong>จำนวนสินค้า</strong> {{count}} ชิ้น</p>
+                    <p> <strong>ยอดสินค้ารวมทั้งหมด</strong> {{order.total|intcomma}} บาท</p>
+                    <p> <strong>ค่าธรรมเนียม</strong> {{order.charge|floatformat:-2}} บาท</p>
+                    <p> <strong>ค่าส่ง</strong> {{order.costtotal}} บาท</p>
+
+
+                    <h5>ผลรวมทั้งหมด {{order.total_all|intcomma}} บาท</h4>
+
+                </div>
+                <br>
+                <hr>
+                <br>
+
+                <!-- <h4><u>รายละเอียดการชำระเงิน</u></h4><br> -->
+                {% if order.orderstatus_id == 1 %}
+                <h4><u>รายละเอียดการชำระเงิน</u></h4><br>
+                <label>
+                    <strong>โอนไปยัง</strong>
+
+                </label>
+
+
+
+                {% for bank in banks %}
+
+                {% if bank.bank_name == "ทรูมันนี่วอเล็ต" %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bank_id" id="exampleRadios1" value="{{bank.id}}"
+                        checked>
+                    <div class="media my-3">
+                        <div class="media-left">
+                            <img style="float:left" src="{{bank.bank_image.url}}" width="40"></a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading" style="font-size: 13px">&nbsp; {{bank.bank_name}}</h4>
+                            <div class="bank-detail">
+                                <div class="account-number">
+                                    <strong>&nbsp; {{bank.bank_telephone}} </strong>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif bank.bank_name != "ทรูมันนี่วอเล็ต" %}
+
+                <div class="form-check my-3">
+                    <input class="form-check-input" type="radio" name="bank_id" id="exampleRadios1" value="{{bank.id}}"
+                        checked>
+                    <div class="media my-3">
+                        <div class="media-left">
+                            <img style="float:left" src="{{bank.bank_image.url}}" width="40"></a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading" style="font-size: 13px">&nbsp; {{bank.bank_name}}</h4>
+                            <div class="bank-detail">
+                                <div class="account-number">
+                                    <span>&nbsp; เลขที่บัญชี :</span>
+                                    <strong>{{bank.bank_number}} </strong>
+                                    <span>&nbsp; ชื่อ:</span>
+                                    {{bank.bank_account}}
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+
+
+                <br>
+
+
+                <div class="form-group">
+                    <input id="datepicker" name="datepicker" width="276" placeholder="เดือน-วัน-ปี"
+                        autocomplete="off" />
+
+
+                </div>
+
+
+                <div class="form-group">
+                    <input type="file" name="transfer_image" accept="image/x-png,image/gif,image/jpeg"
+                        onchange="loadFile(event)" required>
+                    <p><img id="output" width="200" /></p>
+
+                </div>
+
+                <div class="form-group my-3">
+                    <input type="submit" value="แนบหลักฐาน" class="btn btn-info">
+                </div>
+                <br>
+                <hr>
+                <br>
+                <h4><u>รายการสินค้า</u></h4>
+                <div class="card my-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="text-muted">
+                                <tr>
+                                    <th scope="col" width="50">สินค้า</th>
+                                    <th scope="col" width="120">จำนวน/ชิ้น</th>
+                                    <th scope="col" width="120">ราคา</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in order_item %}
+                                <tr>
+                                    <td>
+                                        <figure class="media">
+
+                                            <figcaption class="media-body">
+                                                <h6 class="title text-truncate">{{data.product}}</h6>
+
+                                            </figcaption>
+                                        </figure>
+                                    </td>
+                                    <td>
+                                        <p>{{data.quantity}}</p>
+                                    </td>
+                                    <td>
+                                        <div class="price-wrap">
+                                            <var class="price">{{data.price | intcomma}}&nbsp;บาท</var>
+                                            <!-- <small class="text-muted">(bath each)</small> -->
+                                        </div> <!-- price-wrap .// -->
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+                                {% else %}
+                                {% if order.paymenttype_id != 1 %}
+
+                                <div class="form-group my-3">
+
+                                    <img src="{{ order.transfer_image.url }}">
+
+                                </div>
+                                <br>
+                                <hr>
+                                <br>
+                                <h4><u>รายการสินค้า</u></h4>
+                                <div class="card my-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="text-muted">
+                                                <tr>
+                                                    <th scope="col" width="50">สินค้า</th>
+                                                    <th scope="col" width="120">จำนวน/ชิ้น</th>
+                                                    <th scope="col" width="120">ราคา</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for data in order_item %}
+                                                <tr>
+                                                    <td>
+                                                        <figure class="media">
+
+                                                            <figcaption class="media-body">
+                                                                <h6 class="title text-truncate">{{data.product}}</h6>
+
+                                                            </figcaption>
+                                                        </figure>
+                                                    </td>
+                                                    <td>
+                                                        <p>{{data.quantity}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="price-wrap">
+                                                            <var class="price">{{data.price | intcomma}}&nbsp;บาท</var>
+                                                            <!-- <small class="text-muted">(bath each)</small> -->
+                                                        </div> <!-- price-wrap .// -->
+                                                    </td>
+
+                                                </tr>
+
+                                                {% endfor %}
+
+
+                                    </div>
+
+
+                                </div>
+
+                                {% else %}
+
+                                <h4><u>รายการสินค้า</u></h4>
+                                <div class="card my-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="text-muted">
+                                                <tr>
+                                                    <th scope="col" width="50">สินค้า</th>
+                                                    <th scope="col" width="120">จำนวน/ชิ้น</th>
+                                                    <th scope="col" width="120">ราคา</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for data in order_item %}
+                                                <tr>
+                                                    <td>
+                                                        <figure class="media">
+
+                                                            <figcaption class="media-body">
+                                                                <h6 class="title text-truncate">{{data.product}}</h6>
+
+                                                            </figcaption>
+                                                        </figure>
+                                                    </td>
+                                                    <td>
+                                                        <p>{{data.quantity}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="price-wrap">
+                                                            <var class="price">{{data.price | intcomma}}&nbsp;บาท</var>
+                                                            <!-- <small class="text-muted">(bath each)</small> -->
+                                                        </div> <!-- price-wrap .// -->
+                                                    </td>
+
+                                                </tr>
+
+                                                {% endfor %}
+
+
+                                    </div>
+
+
+                                </div>
+                                {% endif %}
+
+                                {% endif %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+    $('#datepicker').datepicker({
+        uiLibrary: 'bootstrap4',
+        format: "yyyy-mm-dd"
+
+    });
+
+
+
+
+
+
+    var loadFile = function (event) {
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+</script>
+
+
+{% endblock%}

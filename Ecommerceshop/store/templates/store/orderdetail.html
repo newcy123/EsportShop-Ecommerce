@@ -1,0 +1,116 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <div class="row my-2">
+          <div class="col-md-12">
+            <div class="invoice-title text-right">
+              <h3>รหัสใบสั่งซื้อ # {{order.order_id}}</h3>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-6">
+                <address>
+                  <strong>ผู้ขายสินค้า:</strong><br>
+                  บริษัท
+                  หนูเหลือง เกมส์มิ่ง จำกัด<br>
+                  ตำบล วัฒนานคร <br>
+                  อำเภอ วัฒนานคร <br>
+                  จังหวัด สระแก้ว <br>
+                  27160
+                </address>
+              </div>
+              <div class="col-md-6 text-right">
+                <address>
+                  <strong>ผู้ซื้อสินค้า:</strong><br>
+                  ชื่อ :{{order.customer_contract.name}}<br>
+                  ที่อยู่ : {{order.customer_contract.address}}<br>
+                  ตำบล : {{order.customer_contract.districts.name_th}}<br>
+                  อำเภอ : {{order.customer_contract.amphures.name_th}}<br>
+                  จังหวัด : {{order.customer_contract.provinces.name_th}}<br>
+                  รหัสไปรษณีย์ : {{order.customer_contract.postcode}}
+                </address>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title"><strong>รายการสั่งซื้อ</strong></h3>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <td><strong>สินค้า/รหัสสินค้า</strong></td>
+                        <td class="text-center"><strong>จำนวน</strong></td>
+                        <td class="text-center"><strong>ราคาต่อหน่วย</strong></td>
+                        <td class="text-right"><strong>จำนวนเงินรวม</strong></td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for items in order_item %}
+                      <tr>
+                        <td>{{items.product}}</td>
+                        <td class="text-center">{{items.quantity}}</td>
+                        <td class="text-center">{{items.price | intcomma}}</td>
+                        <td class="text-right">{{items.sub_total | intcomma}}</td>
+                      </tr>
+                      {% endfor %}
+
+                      <tr>
+                        <td class="no-line"></td>
+                        <td class="no-line text-center"></td>
+
+                        <td class="no-line text-center">ค่าส่ง</td>
+                        <td class="no-line text-right">{{order.costtotal | intcomma}}</td>
+                      </tr>
+
+                      
+                      <tr>
+                        <td class="no-line"></td>
+                        <td class="no-line text-center"></td>
+
+                        <td class="no-line text-center">ค่าธรรมเนียม</td>
+                        <td class="no-line text-right">{{order.charge |floatformat:-2}}</td>
+                      </tr>
+
+                      <tr>
+                        <td class="no-line"></td>
+                        <td class="no-line text-center"></td>
+                        <td class="no-line text-center">รวมยอดชำระเงิน</td>
+                        <td class="no-line text-right">{{order.total_all | intcomma}}</td>
+
+
+                      </tr>
+
+
+
+                    </tbody>
+                  </table>
+                  <button class="btn btn-secondary pull-right" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    ปริ้นใบสั่งซื้อ
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  {% endblock%}

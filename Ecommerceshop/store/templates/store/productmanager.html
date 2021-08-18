@@ -1,0 +1,192 @@
+{% extends 'store/dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% block asd %}
+
+
+<div class="container my-3">
+  {% for msg in messages %}
+  {% if 'success' in msg.tags %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{msg}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% elif 'error' in msg.tags %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{msg}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endif %}
+
+  {% endfor %}
+
+  {% if products %}
+  <div class="card">
+    <div class="card-body">
+      <h3 align="center">สินค้าทั้งหมด</h3>
+      <form class="form-inline ml-10 " action="{% url 'search_product' %}" , method="GET">
+        <div class="input-group my-2">
+          <input type="text" name="product" class="form-control" placeholder="ค้นหาสินค้า" autocomplete="off">
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+      </form>
+      <br>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="text-center"></th>
+              <th class="">ชื่อ</th>
+              <th class="text">ราคา</th>
+              <th class="text-left">stock</th>
+              <th class="text">Action</th>
+
+
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for data in products %}
+
+            <tr>
+              <td class="text-left">
+                <img src="{{data.image.url}}" alt="" width="100">
+              </td>
+              <td class="text-left">
+
+
+                {{data.name}}
+
+              </td>
+              <td class="text">
+                <var class="price">{{data.price | intcomma}} บาท</var>
+
+
+              </td>
+              <td class="text-left">
+
+                <var class="price">{{data.stock}}</var>
+
+              </td>
+
+
+              <td>
+
+                <form action="{% url 'update_product' %}" method="get">
+                  <input type="hidden" value="{{data.name}}" name="product">
+                  <button type="submit" class="btn btn-secondary">แก้ไขข้อมูล</button>
+                  <!-- <button type="button" class="btn btn-danger" data-toggle="modal"
+                    data-target="#exampleModal{{data.id}}">ลบข้อมูล</button>-->
+                </form>
+
+
+
+              </td>
+
+            </tr>
+            <div class="modal fade" id="exampleModal{{data.id}}" tabindex="-1" role="dialog"
+              aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog " role="document">
+                <form action="{% url 'delete_member' %}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{data.id}}" name="id">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        ยืนยันการลบข้อมูล
+                      </h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      คุณต้องการลบข้อมูลของคุณ
+                      {{data.first_name}}หรือไม่
+                      ?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary">ยืนยันการลบข้อมูล</button>
+                    </div>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+
+
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-body">
+      <h3 align="center">จัดการสมาชิก</h3>
+      <form class="form-inline ml-10 " action="{% url 'search_member' %}" , method="GET">
+        <div class="input-group my-2">
+          <input type="text" name="member" class="form-control" placeholder="ค้นหาชื่อสมาชิก" autocomplete="off">
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+      </form>
+      <br>
+      {% for msg in messages %}
+      {% if 'success' in msg.tags %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% elif 'error' in msg.tags %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endif %}
+
+      {% endfor %}
+
+    </div>
+  </div>
+  {% endif %}
+
+
+  <br>
+  <nav aria-label="pagination">
+    {% if products.paginator.num_pages > 1 %}
+    <ul class="pagination">
+      {% for page_number in products.paginator.page_range %}
+
+      <li class="page-item 
+              {% if products.number == page_number %}
+                active
+              {% endif %}
+              
+              "><a class="page-link" href="?page={{ page_number }}">{{page_number}}</a></li>
+
+      {% endfor %}
+
+    </ul>
+    {% endif %}
+  </nav>
+
+</div>
+
+
+
+
+{% endblock %}

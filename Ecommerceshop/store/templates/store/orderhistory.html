@@ -1,0 +1,134 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content%}
+<div class="container">
+    <!-- {% for msg in messages %}
+    {% if 'success' in msg.tags %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% elif 'error' in msg.tags %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+
+    {% endfor %} -->
+
+    {% if orders %}
+    <div class="card">
+        <div class="card-body">
+            <h3 align="center">ประวัติการสั่งซื้อ</h3>
+            <form class="form-inline ml-10 " action="{% url 'search_order_id' %}" , method="GET">
+                <div class="input-group my-2">
+                    <input type="text" name="order_id" class="form-control" placeholder="ค้นหารหัสใบสั่งซื้อ"
+                        autocomplete="off">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive my-3">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr class="cart_menu">
+                            <td>วันสั่งซื้อสินค้า</td>
+                            <td>รหัสใบสั่งซื้อ</td>
+                            <td>ยอดชำระเงิน</td>
+                            <td>สถานะ</td>
+                            <td>หมายเลขพัสดุ</td>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in orders %}
+                        <tr>
+                            <td class="cart_total">
+                                <p class="cart_total_price">{{item.created | date:"d M Y"}}</p>
+                            </td>
+                            <td class="cart_price">
+                                <a href="{% url 'vieworder' item.order_id %}">{{item.order_id}}</a>
+                            </td>
+
+                            <td class="cart_total">
+                                <p class="cart_total_price">{{item.total_all | intcomma}}</p>
+                            </td>
+
+                            {% if item.orderstatus_id == 1 %}
+                            <td class="cart_total">
+                                <a href="{% url 'order_approve' item.order_id %}" class="btn btn-info">แนบหลักฐาน</a>
+                            </td>
+                            {% elif item.orderstatus_id == 2 %}
+                            <td class="cart_total">
+                                <a href="{% url 'order_approve' item.order_id  %}"><i
+                                        class="fas fa-money-bill"></i><span> ชำระเงินแล้ว</span></a>
+
+                            </td>
+                            {% elif item.orderstatus_id == 3 %}
+                            <td class="cart_total">
+                                <a href="{% url 'order_approve' item.order_id  %}"><i
+                                        class="fas fa-shipping-fast"></i><span> รอจัดส่งพัสดุ</span></a>
+
+                            </td>
+
+                            {% else %}
+                            <td class="cart_total">
+                                <a href="{% url 'order_approve' item.order_id  %}"><i
+                                        class="fas fa-shipping-fast"></i><span> จัดส่งพัสดุเรียบร้อย</span></a>
+
+                            </td>
+                            {% endif %}
+
+                            <td class="cart_status">
+                                {% if item.transfer == None %}
+                                <span class="cart_status">-</span>
+                                {% else %}
+                                <p class="cart_status">{{item.transfer}}</p>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% elif not orders %}
+    <img class="rounded mx-auto d-block" src="/media/other/shopping.png">
+    <div class="text-center my-3">
+        <a href="/" class="btn btn-primary" style="text-align: center;">เลือกสินค้าต่อ</a>
+    </div>
+    {% endif %}
+    <br>
+    <nav aria-label="pagination">
+        {% if orders.paginator.num_pages > 1 %}
+        <ul class="pagination">
+            {% for page_number in orders.paginator.page_range %}
+
+            <li class="page-item 
+              {% if orders.number == page_number %}
+                active
+              {% endif %}
+              
+              "><a class="page-link" href="?page={{ page_number }}">{{page_number}}</a></li>
+
+            {% endfor %}
+
+        </ul>
+        {% endif %}
+    </nav>
+
+
+
+</div>
+
+
+{% endblock %}

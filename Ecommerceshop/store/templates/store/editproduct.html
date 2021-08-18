@@ -1,0 +1,138 @@
+{% extends 'store/dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% block asd %}
+{% load wysiwyg %}
+{% wysiwyg_setup %}
+
+
+<div class="container my-3">
+
+          {% for product in products %}
+          <form action="{% url 'update_product' %}" enctype="multipart/form-data" method="post">
+
+                    {% csrf_token %}
+                    <input type="hidden" value="{{product.id}}" name="id">
+
+                    <div class="card">
+                              <div class="card-body">
+                                        <h3 align="center">แก้ไขข้อมูลสินค้า</h3>
+                                        <div class="form-group my-3">
+                                                  <label for="">ชื่อ : </label>
+                                                  <input type="text" name="name" class="form-control"
+                                                            value="{{product.name}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">Slug : </label>
+                                                  <input type="text" name="slug" class="form-control"
+                                                            value="{{product.slug}}">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <select name="category" class="form-control" placeholder="ประเภท">
+                                                            <label for="">ประเภทสินค้า : </label>
+                                                            <option value="{{product.category_id}}" selected>
+                                                                      {{product.category.name}}
+                                                            </option>
+                                                            {% for category in categorys %}
+                                                            {% if product.category.name != category.name %}
+                                                            <option value="{{category.pk}}">{{category.name}}
+                                                            </option>
+                                                            {% endif %}
+
+                                                            {% endfor %}
+
+                                                  </select>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <label for="">รายละเอียดย่อย : </label>
+                                                  <textarea id="texteditor" class="form-control" name="sub_description"
+                                                            rows="5">{{product.sub_description}}</textarea>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <label for="">รายละเอียด : </label>
+                                                  <textarea id="texteditor2" class="form-control" name="description"
+                                                            rows="10">{{product.description}}</textarea>
+
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">ราคา : </label>
+                                                  <input type="text" name="price" class="form-control"
+                                                            value="{{product.price}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">ค่าส่ง : </label>
+                                                  <input type="text" name="cost" class="form-control"
+                                                            value="{{product.cost}}">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">Stock : </label>
+                                                  <input type="text" name="stock" class="form-control"
+                                                            value="{{product.stock}}">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">อัพโหลดรูป : </label>
+                                                  <input type="file" name="image"
+                                                            accept="image/x-png,image/gif,image/jpeg"
+                                                            onchange="loadFile(event)">
+                                                  <p><img id="output" src="{{product.image.url}}" alt=""
+                                                                      class="img-thumbnail" width="200" /></p>
+
+
+                                        </div>
+
+
+                                        <input type="submit" value="อัพเดท" class="btn btn-success">
+                              </div>
+                    </div>
+
+
+
+          </form>
+
+          {% endfor %}
+
+          <br>
+          <nav aria-label="pagination">
+                    {% if orders.paginator.num_pages > 1 %}
+                    <ul class="pagination">
+                              {% for page_number in orders.paginator.page_range %}
+
+                              <li class="page-item 
+              {% if orders.number == page_number %}
+                active
+              {% endif %}
+              
+              "><a class="page-link" href="?page={{ page_number }}">{{page_number}}</a></li>
+
+                              {% endfor %}
+
+                    </ul>
+                    {% endif %}
+          </nav>
+</div>
+<script>
+          function onlyOne(checkbox) {
+                    var checkboxes = document.getElementsByName('status')
+                    checkboxes.forEach((item) => {
+                              if (item !== checkbox) item.checked = false
+                    })
+          }
+</script>
+{% wysiwyg_editor "texteditor" %}
+{% wysiwyg_editor "texteditor2" %}
+{% endblock %}

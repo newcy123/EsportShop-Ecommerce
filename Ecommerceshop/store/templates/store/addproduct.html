@@ -1,0 +1,130 @@
+{% extends 'store/dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block asd %}
+{% load wysiwyg %}
+{% wysiwyg_setup %}
+
+
+<div class="container my-3">
+          {% for msg in messages %}
+          {% if 'success' in msg.tags %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{msg}}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                    </button>
+          </div>
+          {% elif 'error' in msg.tags %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{msg}}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                    </button>
+          </div>
+          {% endif %}
+
+          {% endfor %}
+
+          <form action="{% url 'add_product' %}" enctype="multipart/form-data" method="post">
+
+                    {% csrf_token %}
+                    <!-- <input type="hidden" value="{{member.id}}" name="id"> -->
+
+                    <div class="card">
+                              <div class="card-body">
+                                        <h3 align="center">เพิ่มสินค้า</h3>
+                                        <div class="form-group my-3">
+
+                                                  <input type="text" name="name" class="form-control"
+                                                            placeholder="ชื่อ">
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <input type="text" name="slug" class="form-control"
+                                                            placeholder="slug">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <select name="category" class="form-control" placeholder="ประเภท">
+
+                                                            <option value="" selected disabled>เลือกประเภทของสินค้า
+                                                            </option>
+                                                            {% for category in categorys %}
+                                                            <option value="{{category.pk}}">{{category.name}}
+                                                            </option>
+
+                                                            {% endfor %}
+
+                                                  </select>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+
+                                                  <textarea id="texteditor" class="form-control" name="sub_description"
+                                                            rows="5" placeholder="รายละเอียดย่อย"></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+
+
+                                                  <textarea id="texteditor2" class="form-control" name="description"
+                                                            rows="10"></textarea>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <input type="text" name="price" class="form-control"
+                                                            placeholder="ราคา">
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <input type="text" name="cost" class="form-control"
+                                                            placeholder="ค่าส่ง">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                                  <input type="text" name="stock" class="form-control"
+                                                            placeholder="stock">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                                  <label for="">อัพโหลดรูป : </label>
+                                                  <input type="file" name="image"
+                                                            accept="image/x-png,image/gif,image/jpeg"
+                                                            onchange="loadFile(event)" required>
+                                                  <p><img id="output" width="200" /></p>
+
+
+                                        </div>
+
+
+
+
+                                        <input type="submit" value="เพิ่ม" class="btn btn-success">
+                              </div>
+
+                    </div>
+          </form>
+          <script>
+                    var loadFile = function (event) {
+                              var image = document.getElementById('output');
+                              image.src = URL.createObjectURL(event.target.files[0]);
+                    };
+          </script>
+          {% wysiwyg_editor "texteditor" %}
+          {% wysiwyg_editor "texteditor2" %}
+
+
+          {% endblock %}

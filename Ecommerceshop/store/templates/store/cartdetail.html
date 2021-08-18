@@ -1,0 +1,274 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+    .param {
+        margin-bottom: 7px;
+        line-height: 1.4;
+    }
+
+    .param-inline dt {
+        display: inline-block;
+    }
+
+    .param dt {
+        margin: 0;
+        margin-right: 7px;
+        font-weight: 600;
+    }
+
+    .param-inline dd {
+        vertical-align: baseline;
+        display: inline-block;
+    }
+
+    .param dd {
+        margin: 0;
+        vertical-align: baseline;
+    }
+
+    .shopping-cart-wrap .price {
+        color: #007bff;
+        font-size: 18px;
+        font-weight: bold;
+        margin-right: 5px;
+        display: block;
+    }
+
+    var {
+        font-style: normal;
+    }
+
+    .media img {
+        margin-right: 1rem;
+    }
+
+    .img-sm {
+        width: 120px;
+        max-height: 150px;
+        object-fit: cover;
+    }
+
+    .cart-submit {
+        margin-top: 12px;
+        margin-bottom: 4px;
+        padding: 9px;
+        border: unset;
+        font-size: 15px;
+        padding-top: 14px;
+        padding-bottom: 10px;
+        width: auto;
+
+    }
+</style>
+
+<div class="container">
+    {% if cart_items %}
+
+
+    <section>
+
+        <div class="card my-3">
+
+            <div class="table-responsive">
+                <table class="table table-hover shopping-cart-wrap ">
+
+                    <thead class="text-muted">
+                        <tr>
+                            <th scope="col" width="150">สินค้า</th>
+                            <th scope="col"></th>
+                            <th scope="col" width="170">ราคา/ชิ้น</th>
+                            <th scope="col" width="200">จำนวน</th>
+                            <th scope="col" width="140">ราคารวม</th>
+                            <th scope="col" width="150" class="text-right">กระทำ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in cart_items %}
+
+                        <tr>
+                            <td>
+                                <figure class="media">
+                                    <div class="img-wrap">
+                                        <a href="{{data.product.get_url}}"><img src="{{data.product.image.url}}"
+                                                class="img-thumbnail img-sm">
+                                    </div>
+
+                                </figure>
+                            </td>
+                            <td>
+                                <figure class="media">
+                                    <figcaption class="media-body">
+                                        <h6 class="title">{{data.product.name}}</h6>
+                                        <!-- text-truncate -->
+                                    </figcaption>
+                                </figure>
+                            </td>
+                            <td>
+                                <div class="price-wrap">
+                                    <var class="price">{{data.product.price | intcomma}}&nbsp;บาท</var>
+
+                                </div>
+                            </td>
+
+
+                            <td>
+
+
+                                <div class="input-group mb-3" style="max-width: 120px;">
+
+
+                                    <div class="input-group-prepend">
+                                        <a href="{% url 'decress_cart' data.product.id %} "
+                                            class="btn btn-outline-primary">&minus;</a>
+
+
+                                    </div>
+
+
+                                    <input type="text" class="form-control text-center" value="{{ data.qty }}" disabled>
+
+                                    <div class="input-group-append">
+                                        <a href="{% url 'update_cart' data.product.id %} "
+                                            class="btn btn-outline-primary">
+                                            &plus;
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                <div class="price-wrap">
+                                    <var class="price">{{data.sub_total | intcomma}}&nbsp;บาท</var>
+
+                                </div>
+                            </td>
+                            <td class="text-right">
+
+
+
+                                <a href="{% url 'cart_item_delete' data.product.id %}" class="btn btn-outline-danger"> ×
+                                    Remove</a>
+                            </td>
+
+                        </tr>
+                        </form>
+
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+            </div>
+
+            </table>
+
+        </div>
+</div>
+
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                ราคารวม
+                <span>{{total|intcomma}} บาท</span>
+            </li>
+          
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                ค่าจัดส่ง
+                <span>{{cost}} บาท</span>
+                
+            </li>
+         
+       
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                <div>
+                    <strong>
+                        ราคารวมสุทธิ </strong>
+                    <strong>
+                        <p class="mb-0">(ภาษีมูลค่าเพิ่ม :)</p>
+                    </strong>
+                </div>
+                <h5><span><strong>{{total_all|intcomma}} บาท</strong></span></h5>
+            </li>
+        </ul>
+
+        <!-- <button type="button" class="btn btn-primary btn-block waves-effect waves-light">go to checkout</button> -->
+
+    </div>
+</div>
+
+</section>
+
+<!-- <ul class="pager">
+        <li><a href="#">Previous</a></li>
+        <li><a href="cartdetail/checkout">Next</a></li>
+        <a href="{{request.META.HTTP_REFERER|escape}}">Back</a>
+      </ul> -->
+</div>
+<div class="container">
+    <div class="col-md-12 text-center">
+        <a href="/" class="btn btn-primary">เลือกสินค้าเพิ่ม</a>
+        <a href="cartdetail/addresschoose/" class="btn btn-primary">ขั้นตอนต่อไป</a>
+    </div>
+</div>
+
+{% elif not cart_items %}
+
+<img class="rounded mx-auto d-block" src="/media/other/empty-cart.png">
+<div class="text-center my-3">
+    <a href="/" class="btn btn-primary" style="text-align: center;">เลือกสินค้าต่อ</a>
+</div>
+
+{% endif %}
+
+<script>
+    function imposeMinMax(el) {
+        if (el.value != "") {
+            if (parseInt(el.value) < parseInt(el.min)) {
+                el.value = el.min;
+            }
+            if (parseInt(el.value) > parseInt(el.max)) {
+                el.value = el.max;
+            }
+        }
+
+    }
+    $("#province").change(function () {
+
+        var provinces_id = $(this).val();
+
+
+        $.ajax({
+            type: "GET",
+            url: "{% url 'ajax_load_amphures' %}",                  // set the url of the request
+            dataType: 'json',
+            data: {
+                'provinces_id': provinces_id       // add the course pk to the GET parameters
+            },
+            success: function (respones) {   // `data` is the return of the `ajax_course_fees` view function
+                let html_data = '<option value="">เลือกอำเภอ</option>';
+                data = respones.data
+                console.log(data)
+                data.forEach(function (data) {
+                    html_data += `<option value="${data.id}">${data.name_th}</option>`
+                });
+                $("#amphure").html(html_data);
+            },
+
+        });
+
+    });
+
+</script>
+
+{% endblock %}

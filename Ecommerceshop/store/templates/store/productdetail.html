@@ -1,0 +1,138 @@
+{% extends 'store/layouts.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+  <br>
+  
+  <form action="{% url 'addCart' product.id  %}" id ="form" method="post">
+    {% csrf_token %}
+  <div class="card">
+    <div class="row">
+      <aside class="col-sm-5 border-right">
+        <article class="gallery-wrap">
+          <div class="img-big-wrap">
+            <div> <a href="#"><img src="{{product.image.url}}"></a></div>
+          </div> <!-- slider-product.// -->
+        </article> <!-- gallery-wrap .end// -->
+      </aside>
+      <aside class="col-sm-7">
+        <article class="card-body p-5">
+          <h3 class="title mb-3">{{product.name}}</h3>
+
+          <p class="price-detail-wrap">
+            <span class="price h3 text-warning">
+              <span class="currency">฿</span><span class="num">{{product.price|intcomma}}</span>
+            </span>
+
+          </p> <!-- price-detail-wrap .// -->
+          <dl class="item-property">
+            <dt>รายละเอียดสินค้า</dt>
+            <dd>
+              <p>{{product.sub_description|safe}}</p>
+            </dd>
+          </dl>
+          <!-- item-property-hor .// -->
+
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              <dl class="param param-inline">
+                <dt>จำนวนที่เหลือ: </dt>
+                <dd>
+                  <select class="form-control form-control-sm" name="dropdown" style="width:70px;">
+                    
+                      {% if product.stock <= 0 %}  
+                        <option value="">-</option>
+
+                      {% else %}
+                        {% for i in qty %}
+                          <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                      {% endif %}
+                  
+                  </select>
+                </dd>
+              </dl> 
+
+              <label class="form-check form-check-inline">
+                {% if product.stock <= 0 %}  
+                <p class="text-danger">สินค้าหมด</p>
+                
+                {% else %}
+                <dt>
+                  มีสินค้าทั้งหมด {{product.stock}} ชิ้น
+                </dt>
+                {% endif %}
+              </label>
+
+
+            </div>
+
+          </div>
+          
+         
+          {% if product.stock <= 0 %}  
+            
+          {% else %}  
+          <hr>
+          
+          <input type="submit" value="ซื้อตอนนี้"  name ="buy" class="btn btn-lg btn-primary text-uppercase"> 
+          &nbsp; 
+          
+          <input type="submit" value="เพิ่มลงตะกร้า" name ="add"  class="btn btn-lg btn-outline-primary text-uppercase">
+          
+          {% endif %}
+        </article>
+      </aside>
+    </form>
+    </div>
+  
+  
+  </div>
+  <br>
+ 
+  <div class="col-sm-15">
+    <div class="card mt-1">
+       
+        <div class="card-body">
+         <div class="p-3 mb-2 bg-dark text-white">รายละเอียดสินค้า</div>
+       
+          <p class="card-text">{{product.description | safe}}</p>
+         
+        </div>
+       
+      
+      </div>
+  <br>
+
+</div> 
+
+
+<script>
+  var clicks = {};
+
+
+  function onClick(element){
+    var data_action = "buy"
+    $.ajax({
+        type:"POST",
+        url:"{% url 'addCart' product.id %}",
+        data:{
+            'data_action':data_action,
+        },
+        success: function(query){
+
+            console.log(query)
+        }
+    });
+    console.log(data_action)
+      
+        
+  }
+
+
+</script>
+
+{% endblock%}
