@@ -1,4 +1,4 @@
-{% extends 'store/layouts.html' %}
+{% extends 'store/base/layouts.html' %}
 {% load static %}
 {% block content %}
 {% load crispy_forms_tags %}
@@ -7,15 +7,15 @@
   <div class="my-2">
     <div class="card">
       <div class="card-body">
-      <h2 align="center">สมาชิกเข้าสู่ระบบ</h2>
-      <form action="{% url 'logincheck' %}" method="post">
-        {% csrf_token %}
-        <p>{{form | crispy}}</p>
-        <input type="submit" class="btn btn-success" value="เข้าสู่ระบบ">
-        <a class="btn btn-primary" href="/signup">สมัครสมาชิก</a>
-        
-      </form>
-    </div>
+        <h2 align="center">สมาชิกเข้าสู่ระบบ</h2>
+        <form action="{% url 'logincheck' %}" method="post">
+          {% csrf_token %}
+          <p>{{form | crispy}}</p>
+          <input type="submit" class="btn btn-success" value="เข้าสู่ระบบ">
+          <a class="btn btn-primary" href="/signup">สมัครสมาชิก</a>
+
+        </form>
+      </div>
     </div>
   </div>
 </div>

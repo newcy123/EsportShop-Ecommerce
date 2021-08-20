@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
 from .models import User, Customer_contract, Category, Product, CartItem, Cart, OrderItem, Order, PaymentType, OrderStatus, Provinces, Amphures, Districts, PaymentType, Bank
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import AuthenticationForm
@@ -16,7 +16,6 @@ from django.http import JsonResponse
 from datetime import datetime
 from datetime import timedelta
 from dateutil.rrule import rrule, MONTHLY
-# from dateutil.relativedelta import relativedelta
 import decimal
 
 
@@ -48,23 +47,23 @@ def index(request, category_slug=None):  # สร้างหน้าแรก 
             product_Page = paginator.page(
                 paginator.num_pages)  # lock หน้าสูงสุด 3
 
-        return render(request, 'store/home.html', {'products': product_Page, 'category': category_page})
+        return render(request, 'store/home/home.html', {'products': product_Page, 'category': category_page})
 
 
 def how_to_orders(request):
-    return render(request, 'store/how_to_orders.html')
+    return render(request, 'store/home/how_to_orders.html')
 
 
 def how_to_payment(request):
-    return render(request, 'store/how_to_payment.html')
+    return render(request, 'store/home/how_to_payment.html')
 
 
 def about_us(request):
-    return render(request, 'store/about_us.html')
+    return render(request, 'store/home/about_us.html')
 
 
 def contract_us(request):
-    return render(request, 'store/contract_us.html')
+    return render(request, 'store/home/contract_us.html')
 
 
 def productdetail(request, category_slug, product_slug):  # แสดงรายละเอียดสินค้า
@@ -78,7 +77,7 @@ def productdetail(request, category_slug, product_slug):  # แสดงรา�
 
     except Exception as e:
         raise e
-    return render(request, 'store/productdetail.html', {'product': product, 'qty': qty_list})
+    return render(request, 'store/shop/productdetail.html', {'product': product, 'qty': qty_list})
 
 
 def _cart_id(request):  # สร้าง seesion , รหัสตะกร้าสินค้า
@@ -223,7 +222,7 @@ def cartdetail(request):  # แสดงรายละเอียดสิน�
     except Exception as e:
         pass
 
-    return render(request, 'store/cartdetail.html',
+    return render(request, 'store/cart/cartdetail.html',
                   dict(
                       cart_items=cart_items,
                       total=total,
@@ -237,7 +236,6 @@ def cartdetail(request):  # แสดงรายละเอียดสิน�
 @login_required(login_url='/login')
 def incress_cart(request, product_id):  # เพิ่มจำนวนสินค้าบนตะกร้า
     product = Product.objects.get(id=product_id)
-    # update = int(request.POST['update'])
 
     cart = Cart.objects.get(user=request.user)
     cart_item = CartItem.objects.get(product=product, cart=cart)
@@ -294,7 +292,7 @@ def saveorder(request):  # แสดงหน้า Addresschoose
     except Exception as e:
         pass
 
-    return render(request, 'store/addresschoose.html',
+    return render(request, 'store/cart/addresschoose.html',
                   dict(
                       provinces=provinces,
                       payment_type=payment_type,
@@ -346,7 +344,7 @@ def save_order(request):  # บันทึกข้อมูลหน้า Add
     stripe_total = int((total_all*100)+(charge_amount*100))
     description = "Payment Online"
     data_key = settings.PUBLIC_KEY
-    return render(request, 'store/confirm_order.html',
+    return render(request, 'store/cart/confirm_order.html',
                   dict(
                       contract=contract,
                       payment_type=payment_type,
@@ -499,6 +497,15 @@ def confirm_order_credit(request):  # ยืนยันการสั่งซ
         return False, e
 
 
+# หน้าขอบคุณ
+@login_required(login_url='/login')
+def thankyou(request):
+
+    order_id = request.session['order']
+    order_num = Order.objects.get(order_id=order_id)
+    return render(request, 'store/cart/thankyou.html', {'order': order_num})
+
+
 # ลงทะเบียน
 def signup(request):  # แสดงหน้าลงทะเบียน
     form = SignUpForm()
@@ -568,9 +575,7 @@ def logoff(request):  # logoff
     return redirect("/login")
 
 
-# ค้นหาสินค้า
-
-def search(request):
+def search(request):  # ค้นหาสินค้า
     serach = request.GET['product']
     serach_product = Product.objects.filter(name__icontains=serach)
     if not serach_product:
@@ -645,7 +650,7 @@ def orderHistory(request):  # สำหรับ user
             order_Page = paginator.page(
                 paginator.num_pages)  # lock หน้าสูงสุด 3
 
-    return render(request, 'store/orderhistory.html', dict(orders=order_Page))
+    return render(request, 'store/orders/orderhistory.html', dict(orders=order_Page))
 
 
 @login_required(login_url='/login')
@@ -655,7 +660,7 @@ def viewOrder(request, order_id):  # ดูรายละเอียดสิ�
         order_list = Order.objects.get(order_id=order_id)
         order__list = order_list.id
         order_item = OrderItem.objects.filter(order=order__list)
-    return render(request, 'store/orderdetail.html', {
+    return render(request, 'store/orders/orderdetail.html', {
         'order': order_list,
         'order_item': order_item
     })
@@ -700,7 +705,7 @@ def order_approve(request, order_id):  # แจ้งชำระ/อัพโ�
             messages.success(request, "แจ้งชำระสำเร็จ")
             return redirect('/my-account/orderhistory/')
 
-    return render(request, 'store/paymentapprove.html', {
+    return render(request, 'store/orders/paymentapprove.html', {
         'order': order_list, 'order_item': order_item, 'count': count, 'cost': cost, 'total_all': total_all,
         'banks': banks
     })
@@ -728,9 +733,9 @@ def update_tracking(request, order_id):  # ใส่ที่เลขติต�
             order.transfer = ems
             order.save()
             messages.success(request, 'แจ้งเลขพัสดุเสร็จเรียบร้อย')
-            return redirect('/orderlist')
+            return redirect(request.META['HTTP_REFERER'])
 
-    return render(request, 'store/updatetracking.html', {
+    return render(request, 'store/admin/updatetracking.html', {
         'order': order_list, 'order_item': order_item, 'count': count, 'cost': cost, 'total_all': total_all
     })
 
@@ -815,7 +820,7 @@ def status_change(request, order_id):
     messages.success(request, 'ยืนยันการชำระเรียบร้อย')
     order.save()
 
-    return redirect('/orderlist')
+    return redirect(request.META['HTTP_REFERER'])
 
 
 # เกี่ยวกับตำบล,อำเภอ,จังหวัด
@@ -831,49 +836,20 @@ def load_districts(request):
     districts = list(Districts.objects.filter(amphure_id=amphures).values())
     return JsonResponse({'data': districts})
 
-# หน้าขอบคุณ
-
-
-@login_required(login_url='/login')
-def thankyou(request):
-
-    order_id = request.session['order']
-    order_num = Order.objects.get(order_id=order_id)
-    return render(request, 'store/thankyou.html', {'order': order_num})
-
 
 @login_required(login_url='/login')
 @permission_required('is_staff')
 def dashboard(request):
-    now = datetime.now()
-    year = now.year
 
-    # create date objects
-    begin_year = datetime(year, 1, 1)
-    end_year = datetime(year, 12, 31)
-    one_day = timedelta(days=1)
-
-    print(begin_year)
-    # next_day = begin_year
-    # for month in month_iter(begin_year, end_year):  # includes potential leap year
-    #     if next_day > end_year:
-    #         break
-
-    #     print(month.strftime("%d %b, %Y"))
-    #     next_day += one_day
-
-    total = 0
     order_count = 0
+    total = Order.objects.filter(
+        orderstatus_id__gte=0).aggregate(sum=Sum('total'))['sum']  # gte คือ >=  nte คือ <=
     product = Product.objects.all().count()
+    order_count = Order.objects.all().count()
     order_list = Order.objects.all()
     order_item = OrderItem.objects.all().values('product', 'price').annotate(
         sum_all=Sum('quantity')
     ).order_by('product')
-
-    for orders in order_list:
-        order_count += orders.id
-        if orders.paymenttype_id == 3:
-            total += orders.total
 
     payload = {
         'orders': order_list,
@@ -917,8 +893,7 @@ def add_category(request):
 def product_manager(request):
     product = Product.objects.all()
 
-    # 6/2 =3
-    paginator = Paginator(product, 5)  # 6:1 หน้า
+    paginator = Paginator(product, 5)
 
     try:
         page = int(request.GET.get('page', '1'))
@@ -928,9 +903,9 @@ def product_manager(request):
     try:
         product_Page = paginator.page(page)
 
-    except (EmptyPage, InvalidPage):  # กรณีหน้าเปล่าๆ,มีข้อมูลไม่ถูกต้อง
+    except (EmptyPage, InvalidPage):
         product_Page = paginator.page(
-            paginator.num_pages)  # lock หน้าสูงสุด 3
+            paginator.num_pages)
 
     return render(request, 'store/admin/productmanager.html',
                   dict(products=product_Page))

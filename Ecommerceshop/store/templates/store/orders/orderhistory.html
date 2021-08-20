@@ -1,26 +1,9 @@
-{% extends 'store/layouts.html' %}
+{% extends 'store/base/layouts.html' %}
 {% load static %}
 {% load humanize %}
 {% block content%}
 <div class="container">
-    <!-- {% for msg in messages %}
-    {% if 'success' in msg.tags %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{msg}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% elif 'error' in msg.tags %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{msg}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
 
-    {% endfor %} -->
 
     {% if orders %}
     <div class="card">
@@ -38,7 +21,7 @@
             <div class="table-responsive my-3">
                 <table class="table table-condensed">
                     <thead>
-                        <tr class="cart_menu">
+                        <tr>
                             <td>วันสั่งซื้อสินค้า</td>
                             <td>รหัสใบสั่งซื้อ</td>
                             <td>ยอดชำระเงิน</td>
@@ -50,47 +33,47 @@
                     <tbody>
                         {% for item in orders %}
                         <tr>
-                            <td class="cart_total">
+                            <td>
                                 <p class="cart_total_price">{{item.created | date:"d M Y"}}</p>
                             </td>
-                            <td class="cart_price">
+                            <td>
                                 <a href="{% url 'vieworder' item.order_id %}">{{item.order_id}}</a>
                             </td>
 
-                            <td class="cart_total">
-                                <p class="cart_total_price">{{item.total_all | intcomma}}</p>
+                            <td>
+                                <p>{{item.total_all | intcomma}}</p>
                             </td>
 
                             {% if item.orderstatus_id == 1 %}
-                            <td class="cart_total">
+                            <td>
                                 <a href="{% url 'order_approve' item.order_id %}" class="btn btn-info">แนบหลักฐาน</a>
                             </td>
                             {% elif item.orderstatus_id == 2 %}
-                            <td class="cart_total">
+                            <td>
                                 <a href="{% url 'order_approve' item.order_id  %}"><i
-                                        class="fas fa-money-bill"></i><span> ชำระเงินแล้ว</span></a>
+                                        class="fas fa-money-bill"></i><span>ชำระเงินแล้ว</span></a>
 
                             </td>
                             {% elif item.orderstatus_id == 3 %}
-                            <td class="cart_total">
+                            <td>
                                 <a href="{% url 'order_approve' item.order_id  %}"><i
-                                        class="fas fa-shipping-fast"></i><span> รอจัดส่งพัสดุ</span></a>
+                                        class="fas fa-shipping-fast"></i><span>รอจัดส่งพัสดุ</span></a>
 
                             </td>
 
                             {% else %}
-                            <td class="cart_total">
+                            <td>
                                 <a href="{% url 'order_approve' item.order_id  %}"><i
-                                        class="fas fa-shipping-fast"></i><span> จัดส่งพัสดุเรียบร้อย</span></a>
+                                        class="fas fa-shipping-fast"></i><span>จัดส่งพัสดุเรียบร้อย</span></a>
 
                             </td>
                             {% endif %}
 
-                            <td class="cart_status">
+                            <td>
                                 {% if item.transfer == None %}
-                                <span class="cart_status">-</span>
+                                <span>-</span>
                                 {% else %}
-                                <p class="cart_status">{{item.transfer}}</p>
+                                <p>{{item.transfer}}</p>
                                 {% endif %}
                             </td>
 

@@ -6,14 +6,7 @@ from . import views
 
 urlpatterns = [
 
-    # หน้าแรก user
-    path('', views.index, name="home"),
-    path('orders/', views.how_to_orders),
-    path('payment/', views.how_to_payment),
-    path('aboutus/', views.about_us),
-    path('contractus/', views.contract_us),
-
-    # หน้าแรก admin/dashboard
+    # หน้าเกี่ยวกับ admin
     path('admins/dashboard/', views.dashboard, name="chart"),
     path('admins/members/', views.member),
     path('admins/members/update/', views.update_member, name="edit_member"),
@@ -27,6 +20,34 @@ urlpatterns = [
     path('admins/categorys/', views.category),
     path('admins/add/categorys/', views.add_category, name="add_category"),
     path('admins/add/product/', views.add_product, name="add_product"),
+
+    # ประวัติการสั่งซื้อ admin/customer
+    path('admins/orderlist/', views.orderList, name="orderlist"),
+    path('orderlist/orderstatus/<str:order_id>',
+         views.status_change, name="status_change"),
+    path('orderlist/updatetracking/<str:order_id>',
+         views.update_tracking, name="updatetracking"),
+
+
+    # Login/register
+    path('signup/', views.signup),
+    path('signup_post', views.signup_post, name="signup_post"),
+    path('login/', views.login, name="login"),
+    path('logincheck', views.logincheck, name="logincheck"),
+    path('logout', views.logoff, name="logoff"),
+    path('search/', views.search, name='search'),
+    path('search/order', views.search_order_id, name='search_order_id'),
+    path('cartdetail/checkout/thankyou/', views.thankyou, name="thankyou"),
+
+
+    # path ด้านล่างเกี่ยวกับสิ่งลูกค้ากระทำทั้งหมด
+    # หน้าแรก user
+    path('', views.index, name="home"),
+    path('orders/', views.how_to_orders),
+    path('payment/', views.how_to_payment),
+    path('aboutus/', views.about_us),
+    path('contractus/', views.contract_us),
+
 
     # ประเภทสินค้า
     path('category/<slug:category_slug>', views.index, name='product_category'),
@@ -58,30 +79,11 @@ urlpatterns = [
     path('cartdetail/addresschoose/save/', views.save_order, name="save_order"),
 
 
-    # หน้า ยืนยันการสั่งซื้อ
+    # หน้ายืนยันการสั่งซื้อสำหรับลูกค้า
     path('cartdetail/addresschoose/save/confirm',
          views.confirm_order, name="confirm_order"),
     path('cartdetail/addresschoose/save/confirm_credit',
          views.confirm_order_credit, name="confirm_order_credit"),
-
-
-    # Login/register
-    path('signup/', views.signup),
-    path('signup_post', views.signup_post, name="signup_post"),
-    path('login/', views.login, name="login"),
-    path('logincheck', views.logincheck, name="logincheck"),
-    path('logout', views.logoff, name="logoff"),
-    path('search/', views.search, name='search'),
-    path('search/order', views.search_order_id, name='search_order_id'),
-    path('cartdetail/checkout/thankyou/', views.thankyou, name="thankyou"),
-
-
-    # ประวัติการสั่งซื้อ admin/customer
-    path('admins/orderlist/', views.orderList, name="orderlist"),
-    path('orderlist/orderstatus/<str:order_id>',
-         views.status_change, name="status_change"),
-    path('orderlist/updatetracking/<str:order_id>',
-         views.update_tracking, name="updatetracking"),
 
 
     # ดูประวัติการสั่งซ์้อ

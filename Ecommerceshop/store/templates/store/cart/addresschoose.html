@@ -1,10 +1,10 @@
-{% extends 'store/layouts.html' %}
+{% extends 'store/base/layouts.html' %}
 {% load static %}
 {% load humanize %}
 {% block content %}
 <style>
   /* USER PROFILE PAGE */
-  
+
 
   .container .main-section .payment-tabs .payment-tabs-item .nav-link {
     background: #fff;
@@ -119,30 +119,29 @@
     display: block;
     margin-inline-start: 7px;
     top: 15px;
-  } 
+  }
 
   .button_position {
     position: absolute;
     left: 100%;
     top: 40%;
   }
-  
 </style>
 <div class="container">
   {% for msg in messages %}
   {% if 'success' in msg.tags %}
   <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{msg}}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-      </button>
+    {{msg}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
   {% elif 'error' in msg.tags %}
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{msg}}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-      </button>
+    {{msg}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
   {% endif %}
 
@@ -185,7 +184,7 @@
                       <button type="button" class="btn btn-secondary btn-space float-right" data-toggle="modal"
                         data-target="#Update{{data.id}}"><i class="fa fa-wrench"></i>
                         แก้ไข </button>
-                      
+
                       <button type="button" class="btn btn-secondary btn-space float-right" data-toggle="modal"
                         data-target="#DeleteModal{{data.id}}"><i class="fa fa-trash"></i>ลบข้อมูล</button>
 
@@ -219,7 +218,7 @@
                       </div>
                     </div>
                     <br>
-                    
+
                     <!-- Modal update-->
                     <div class="modal fade" id="Update{{data.id}}" tabindex="-1" role="dialog"
                       aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -320,7 +319,7 @@
                       </div>
                     </div>
                     {% endfor %}
-                    
+
 
 
 
@@ -340,7 +339,7 @@
 
         </div>
 
-      
+
         <div class="card my-3">
           <div class="card-body">
             <label>
@@ -486,14 +485,14 @@
     </div>
   </div>
   {% elif not cart_items %}
-  
-  
 
-          <img class="rounded mx-auto d-block" src="/media/other/empty-cart.png" >
-        <div class="text-center my-3">
-          <a href="/" class="btn btn-primary" style="text-align: center;">เลือกสินค้าต่อ</a>
-        </div>
-     
+
+
+  <img class="rounded mx-auto d-block" src="/media/other/empty-cart.png">
+  <div class="text-center my-3">
+    <a href="/" class="btn btn-primary" style="text-align: center;">เลือกสินค้าต่อ</a>
+  </div>
+
   {% endif %}
 
 </div>
