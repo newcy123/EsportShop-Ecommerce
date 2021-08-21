@@ -15,7 +15,7 @@ from django.contrib import messages  # ทำ alert แจ้งเตื่อ�
 from django.http import JsonResponse
 from datetime import datetime
 from datetime import timedelta
-from dateutil.rrule import rrule, MONTHLY
+
 import decimal
 
 
@@ -311,9 +311,7 @@ def save_order(request):  # บันทึกข้อมูลหน้า Add
     cost = 0
     charge_amount = 0.0
 
-    # ดึงก้อนตะกร้าสินค้าที่มี username ตรงกับ id ที่login
     cart = Cart.objects.get(user=request.user)
-    # โยน cart (ก้อนตะกร้าสินค้า) ที่ CartItem เพือเช็คว่า มีสินค้าตัวใดบ้างอยู่ใน cart (ก้อนตะกร้าสินค้า) พร้อมเช็ค active = true
     cart_items = CartItem.objects.filter(cart=cart, active=True)
     contract = Customer_contract.objects.all().filter(user=request.user)
 
@@ -327,11 +325,13 @@ def save_order(request):  # บันทึกข้อมูลหน้า Add
         count += item.qty
         stock = item.product.stock
     if request.method == "POST":
+
         if not contract:
             messages.error(request, "กรุณาเพิ่มที่อยู่ก่อน")
             return redirect(request.META['HTTP_REFERER'])
-        contract = request.POST['contract']
-        payment_type = request.POST['payment_type']
+        else:
+            contract = request.POST['contract']
+            payment_type = request.POST['payment_type']
 
     if payment_type == '1':
         charge_amount = ((3 * total_all)/100) + 9
@@ -859,7 +859,7 @@ def dashboard(request):
         'total': total,
     }
 
-    return render(request, 'store/admin/dashboard2.html', {
+    return render(request, 'store/admin/dashboard.html', {
         'payload': payload,
     }
     )

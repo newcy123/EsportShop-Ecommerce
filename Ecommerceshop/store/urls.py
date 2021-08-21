@@ -7,7 +7,7 @@ from . import views
 urlpatterns = [
 
     # หน้าเกี่ยวกับ admin
-    path('admins/dashboard/', views.dashboard, name="chart"),
+    path('admins/dashboard/', views.dashboard),
     path('admins/members/', views.member),
     path('admins/members/update/', views.update_member, name="edit_member"),
     path('admins/members/delete/', views.delete_member, name="delete_member"),
