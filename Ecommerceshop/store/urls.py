@@ -15,11 +15,12 @@ urlpatterns = [
     path('admins/search_product/', views.search_product, name="search_product"),
     path('admins/productall/', views.product_manager, name="product_manager"),
     path('admins/addproduct/', views.product),
+    path('admins/add/product/', views.add_product, name="add_product"),
     path('admins/product/update/', views.update_product, name="update_product"),
     path('admins/product/delete/', views.delete_product, name="delete_product"),
     path('admins/categorys/', views.category),
     path('admins/add/categorys/', views.add_category, name="add_category"),
-    path('admins/add/product/', views.add_product, name="add_product"),
+
 
     # ประวัติการสั่งซื้อ admin/customer
     path('admins/orderlist/', views.orderList, name="orderlist"),
